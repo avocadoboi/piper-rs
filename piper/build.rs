@@ -1,3 +1,3 @@
 fn main() {
-    println!("cargo:rustc-link-lib=dynamic=espeak-ng");
+    println!("cargo:rustc-link-lib=espeak-ng");
 }
