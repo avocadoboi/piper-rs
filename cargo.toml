@@ -1,12 +1,6 @@
 [workspace]
 
 members = [
-    "piper/core",
-    "piper/synth",
-    "piper/models/vits",
-    "piper/piper",
-    "pyper",
-    "espeak-phonemizer",
-    "sonic-sys",
-    "wave-writer"
+    "piper",
+    "piper-test",
 ]
