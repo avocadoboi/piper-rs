@@ -39,7 +39,9 @@ impl fmt::Display for ESpeakError {
 static ESPEAKNG_INIT: Lazy<ESpeakResult<()>> = Lazy::new(|| {
     let data_dir = match env::var(PIPER_ESPEAKNG_DATA_DIRECTORY) {
         Ok(directory) => PathBuf::from(directory),
-        Err(_) => env::current_exe().unwrap().parent().unwrap().to_path_buf(),
+        Err(_) => {
+            env::current_exe().unwrap().parent().unwrap().to_path_buf()
+        },
     };
     let es_data_path_ptr = if data_dir.join("espeak-ng-data").exists() {
         rust_string_to_c(data_dir.display().to_string())
