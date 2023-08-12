@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // speaker.set_speaker("whisper".to_string())?;
     
     let synthesizer = PiperSpeechSynthesizer::new(speaker)?;
-    synthesizer.synthesize_to_file("kaniner.wav", "Kaniner är små och fluffiga.".to_string())?;
+    synthesizer.synthesize_to_wav_file("kaniner.wav", "Kaniner är små och fluffiga.".to_string())?;
 
     Ok(())
 }
