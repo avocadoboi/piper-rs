@@ -29,12 +29,8 @@ where
     I: Iterator<Item = &'a i16>,
     B: Seek + Write,
 {
-    let Ok(mut wave_writer) = WaveWriter::new(
-        num_channels as u16,
-        sample_rate,
-        (sample_width * 8) as u16,
-        buf
-    ) else {
+    let Ok(mut wave_writer) = WaveWriter::new(num_channels as u16, sample_rate, (sample_width * 8) as u16, buf) 
+    else {
         return Err(WaveWriterError("Failed to initialize wave writer".to_string()));
     };
     let any_fail = samples

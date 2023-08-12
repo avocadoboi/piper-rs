@@ -1,4 +1,5 @@
 use std::collections::vec_deque::VecDeque;
+use std::io::Cursor;
 use std::sync::Arc;
 
 use once_cell::sync::{Lazy, OnceCell};
@@ -74,11 +75,12 @@ impl PiperSpeechSynthesizer {
             batch_size,
         )
     }
-    pub fn synthesize_to_file(
-        &self,
-        filename: &str,
-        text: String,
-    ) -> PiperResult<()> {
+
+    pub fn synthesize_to_samples(&self, text: String) -> PiperResult<Vec<i16>> {
+        if text.is_empty() {
+            return Ok(vec![]);
+        }
+
         let mut samples: Vec<i16> = Vec::new();
         for result in self.synthesize_parallel(text)? {
             match result {
@@ -88,11 +90,30 @@ impl PiperSpeechSynthesizer {
                 Err(e) => return Err(e),
             };
         }
+        
         if samples.is_empty() {
             return Err(PiperError::OperationError(
                 "No speech data to write".to_string(),
             ));
         }
+
+        Ok(samples)
+    }
+    pub fn synthesize_to_wav_buffer(&self, text: String) -> PiperResult<Vec<u8>> {
+        let samples = self.synthesize_to_samples(text)?;
+        
+        let mut wave_buffer = Vec::new();
+        wave_writer::write_wave_samples_to_buffer(
+            Cursor::new(&mut wave_buffer), 
+            samples.iter(), 
+            self.0.wave_info()?.sample_rate as u32,
+            self.0.wave_info()?.num_channels.try_into().unwrap(),
+            self.0.wave_info()?.sample_width.try_into().unwrap(),
+        )?;
+        Ok(wave_buffer)
+    }
+    pub fn synthesize_to_wav_file(&self, filename: &str, text: String) -> PiperResult<()> {
+        let samples = self.synthesize_to_samples(text)?;
         Ok(wave_writer::write_wave_samples_to_file(
             filename.into(),
             samples.iter(),
