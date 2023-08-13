@@ -56,7 +56,7 @@ pub struct ModelConfig {
     num_symbols: u32,
     phoneme_type: Option<String>,
     #[allow(dead_code)]
-    phoneme_map: HashMap<i64, char>,
+    phoneme_map: HashMap<char, Vec<char>>,
     phoneme_id_map: HashMap<char, Vec<i64>>,
 }
 
