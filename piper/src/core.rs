@@ -35,7 +35,7 @@ impl From<wave_writer::WaveWriterError> for PiperError {
 }
 
 /// A wrapper type that holds sentence phonemes
-pub struct Phonemes(Vec<String>);
+pub struct Phonemes(pub Vec<String>);
 
 impl Phonemes {
     pub fn sentences(&self) -> &Vec<String> {

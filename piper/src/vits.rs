@@ -54,6 +54,7 @@ pub struct ModelConfig {
     inference: InferenceConfig,
     #[allow(dead_code)]
     num_symbols: u32,
+    phoneme_type: Option<String>,
     #[allow(dead_code)]
     phoneme_map: HashMap<i64, char>,
     phoneme_id_map: HashMap<char, Vec<i64>>,
@@ -448,7 +449,7 @@ impl VitsModel {
             speaker: None,
             noise_scale: model_config.inference.noise_scale,
             length_scale: model_config.inference.length_scale,
-            noise_w: model_config.inference.noise_w,
+            noise_w: model_config.inference.noise_w
         };
         Ok((model_config, synth_config))
     }
@@ -456,16 +457,21 @@ impl VitsModel {
 
 impl PiperModel for VitsModel {
     fn phonemize_text(&self, text: &str) -> PiperResult<Phonemes> {
-        let phonemes = match text_to_phonemes(text, &self.config.espeak.voice, None) {
-            Ok(ph) => ph,
-            Err(e) => {
-                return Err(PiperError::PhonemizationError(format!(
-                    "Failed to phonemize given text using espeak-ng. Error: {}",
-                    e
-                )))
-            }
-        };
-        Ok(phonemes.into())
+        if let Some(phoneme_type) = &self.config.phoneme_type && phoneme_type == "text" {
+            Ok(Phonemes(vec![text.to_string()]))
+        }
+        else {
+            let phonemes = match text_to_phonemes(text, &self.config.espeak.voice, None) {
+                Ok(ph) => ph,
+                Err(e) => {
+                    return Err(PiperError::PhonemizationError(format!(
+                        "Failed to phonemize given text using espeak-ng. Error: {}",
+                        e
+                    )))
+                }
+            };
+            Ok(phonemes.into())
+        }
     }
 
     fn speak_batch(&self, phoneme_batches: Vec<String>) -> PiperResult<Vec<PiperWaveSamples>> {

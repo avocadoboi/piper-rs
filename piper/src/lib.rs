@@ -1,3 +1,5 @@
+#![feature(let_chains)]
+
 mod espeakng;
 mod phonemize;
 mod wave_writer;
